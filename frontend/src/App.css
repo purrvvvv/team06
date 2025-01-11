@@ -349,4 +349,101 @@ table th {
   color: white;
   padding: 10px;
   border-radius: 30px;
+}/* News Container Styles */
+.news-container {
+  overflow: hidden;
+}
+
+/* Create scrollable container for news list */
+.news-list-container {
+  max-height: 700px; /* Set maximum height for scrolling */
+  overflow-y: auto;  /* Enable vertical scrolling */
+  margin-top: 10px;
+  padding-right: 10px; /* Add padding for scroll bar */
+}
+
+/* News List Styles */
+.news-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Add space between items */
+}
+
+/* News Item Styles */
+.news-item {
+  display: flex;
+  flex-direction: row;  /* Arrange image and content side by side */
+  padding: 15px;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 15px;
+  background-color: #f9f9f9;
+  border-radius: 8px; /* Slight round corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for better visibility */
+}
+
+.news-image-container {
+  margin-right: 15px; /* Space between image and content */
+}
+
+.news-image {
+  width: 80px; /* Fixed size for the image */
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;  /* Make sure the image fits well */
+}
+
+.news-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column; /* Stack content vertically */
+}
+
+.news-summary {
+  font-size: 14px;
+  color: #555;
+  margin-top: 10px;
+  line-height: 1.4; /* Improve readability */
+}
+
+.news-date {
+  font-size: 12px;
+  color: #aaa;
+  margin-top: 5px;
+}
+
+/* News Link Styles */
+.news-link {
+  margin-top: 10px;
+  display: inline-block;
+  padding: 8px 15px;
+  background-color: #009159;
+  color: white;
+  text-decoration: none;
+  text-align: center;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.news-link:hover {
+  background-color:  #009C66;
+}
+
+.error-message {
+  color: red;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* If you want to style the scroll bar (optional) */
+.news-list-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.news-list-container::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 10px;
+}
+
+.news-list-container::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
 }

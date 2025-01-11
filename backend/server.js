@@ -6,6 +6,9 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 app.use(express.json());
+const cors = require("cors");
+app.use(cors());
+
 
 // API Routes
 app.use('/api/portfolio', portfolioRoutes);

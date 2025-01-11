@@ -16,28 +16,12 @@ import {
   FaUser,
 } from "react-icons/fa";
 import "./App.css";
+import News from "./components/News";
 
 const App = () => {
   const [profilePic, setProfilePic] = useState("");
   const [email, setEmail] = useState(""); 
-  const [portfolioData, setPortfolioData] = useState([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('http://localhost:5000/api/portfolio');
-        if (!response.ok) {
-          throw new Error('Failed to fetch data');
-        }
-        const data = await response.json();
-        setPortfolioData(data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-  
-    fetchData();
-  }, []);
 
   useEffect(() => {
     fetch("https://randomuser.me/api/")
@@ -82,8 +66,8 @@ const App = () => {
 
         <div className="main-content">
           <Routes>
-            <Route path="/" element={<Dashboard portfolioData={portfolioData} />} />
-            <Route path="/news" element={<div>News Section</div>} />
+            <Route path="/" element={<div>Table</div>} />
+            <Route path="/news" element={<News />} /> 
             <Route path="/recommend" element={<div>Recommendations</div>} />
             <Route path="/profile" element={<Profile profilePic={profilePic} email={email} />} />
           </Routes>

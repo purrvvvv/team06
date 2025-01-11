@@ -1,38 +1,352 @@
-.App {
-  text-align: center;
+/* Container Styles */
+.container {
+  display: flex;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+  overflow: hidden; 
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+:root {
+  --gradient-direction: at bottom right; 
+  --gradient-colors: #04BD98, #009C66, #68CCB0, #009159, #00945B, #007c4d, #006d43; /* Default gradient colors */
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* Sidebar Styles */
+.sidebar {
+  width: 250px;
+  background: radial-gradient(var(--gradient-direction), var(--gradient-colors));  
+  color: white;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  border-radius: 8px; /* Rounded corners */
+  position: relative;
+}
+
+/* Profile Section */
+.profile {
+  text-align: left;
+  display: flex;
+  align-items: center; /* Align items in a row */
+  margin-bottom: 20px;
+  flex-direction: row;
+}
+
+.profile-pic {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%; 
+  margin-right: 15px;
+  margin-left: -20px;
+}
+
+.user {
+  display: flex;
+  flex-direction: column; 
+  align-items: flex-start;
+}
+
+.username {
+  font-size: 16px;
+  font-weight: bold;
   color: white;
+  margin-bottom: 5px;
+  text-align: left;
 }
 
-.App-link {
-  color: #61dafb;
+.email {
+  font-size: 14px;
+  color: #bdc3c7;
+  word-wrap: break-word;
+  text-align: left;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Sidebar Menu Styles */
+.menu {
+  width: 100%;
+  margin-top: 0px;
+}
+
+.menu-item {
+  color: white;
+  text-decoration: none;
+  padding: 10px 25px;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  border-radius: 5px;
+  margin: 10px 0;
+  transition: all 0.3s ease;
+}
+
+.menu-item:hover {
+  background-color: #04BD98; /* Light color on hover */
+  color: white;
+  transform: scale(1.05); /* Slight scale effect */
+}
+
+.icon {
+  margin-right: 10px;
+  font-size: 18px;
+}
+
+/* Main Content Styles */
+.main-content {
+  flex: 1;
+  padding: 20px;
+  overflow: hidden; /* Prevent page scroll */
+}
+
+/* Dashboard Styles */
+.dashboard {
+  padding: 20px;
+  border-radius: 8px;
+  color: #333;
+  text-align: left;
+  background-color: #ecf0f1; /* Light background */
+}
+
+/* Portfolio Options Buttons */
+.portfolio-options button {
+  padding: 10px 15px;
+  background-color: #04BD98;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.portfolio-options button:hover {
+  background-color: #009C66; /* Darker shade */
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table th,
+table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+table th {
+  background-color: #f4f4f4;
+}
+
+.market-cap {
+  margin-top: 20px;
+  background-color: #ecf0f1;
+  padding: 15px;
+  border-radius: 5px;
+}
+
+/* Profile Page Styles */
+.profile-page {
+  text-align: center;
+}
+
+.profile-pic-large {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  margin-bottom: 20px;
+}
+
+.user {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Sidebar Footer Styles */
+.sidebar-footer {
+  margin-top: auto; /* Push the footer to the bottom of the sidebar */
+  font-size: 12px;
+  text-align: center;
+  color: rgb(0, 0, 0);
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2); 
+  font-weight: bold;
+}
+
+.sidebar-footer .icon {
+  font-size: 14px; /* Slightly larger for icons */
+  margin: 0 3px; /* Space between text and icons */
+}
+
+/* Dashboard section */
+.portfolio-options {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.scroll-btn {
+  background-color: #04BD98;
+  color: white;
+  font-size: 24px;
+  padding: 10px 15px;
+  border: none;
+  
+  cursor: pointer;
+  position: absolute;
+  z-index: 10;
+}
+
+.scroll-btn.left {
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  border-radius: 50%;
+}
+
+.scroll-btn.right {
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  border-radius: 50%;
+}
+
+.portfolio-container {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto; /* Ensures horizontal scroll */
+  gap: 20px;
+  padding: 20px;
+  scroll-behavior: smooth;
+  max-width: 100%; /* Prevents it from growing beyond the parent */
+  box-sizing: border-box;
+  margin-top: 10px;
+}
+
+.portfolio-item {
+  min-width: 300px;
+  padding: 15px;
+  background-color: #f4f4f4;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  margin-bottom: 20px;
+  flex-shrink: 0; 
+}
+
+.portfolio-btn {
+  width: 100%;
+  padding: 15px;
+  font-size: 18px;
+  font-weight: bold;
+  background-color: #04BD98;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.portfolio-btn:hover {
+  background-color: #009C66;
+}
+
+.stock-info {
+  background-color: #f4f4f4;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.stock-info p {
+  margin: 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+}
+.stock-info strong {
+  font-weight: bold;
+  color: #04BD98;
+}
+
+.stock-info span {
+  color: #555;
+  font-weight: normal;
+}
+
+.stock-info p:nth-child(even) {
+  
+  padding-left: 10px;
+  padding-top: 5px;
+  
+}
+
+.stock-info p:nth-child(odd) {
+  
+  padding-top: 5px;
+  padding-left: 10px;
+}
+
+.stock-info p:hover {
+  background-color: #d1e7e3;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.recommendation {
+  text-align: center;
+}
+
+.recommendation label {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.dashboardicon {
+  margin-right: 10px;
+  font-size: 22px;
+}
+
+/* Scroll Button Styles */
+.scroll-btn {
+  background-color: #04BD98;
+  color: white;
+  font-size: 24px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  position: absolute;
+  z-index: 10;
+}
+
+.scroll-btn.left {
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.scroll-btn.right {
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.name
+{
+  background-color: black;
+  color: white;
+  padding: 10px;
+  border-radius: 20px;
 }

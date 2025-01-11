@@ -187,6 +187,7 @@ table th {
   justify-content: center;
   align-items: center;
   position: relative;
+  margin-top: 0px;
 }
 
 .scroll-btn {
@@ -225,6 +226,8 @@ table th {
   max-width: 100%; /* Prevents it from growing beyond the parent */
   box-sizing: border-box;
   margin-top: 10px;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
 }
 
 .portfolio-item {
@@ -261,8 +264,7 @@ table th {
 .stock-info {
   background-color: #f4f4f4;
   padding: 10px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  
   margin: 0;
   font-size: 16px;
   color: #333;
@@ -348,8 +350,64 @@ table th {
   background-color: black;
   color: white;
   padding: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
   border-radius: 30px;
-}/* News Container Styles */
+  width:fit-content;
+  margin-bottom: 10px;
+}
+
+.decision {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Space between the icon and the text */
+}
+
+.recommendation-icon {
+  width: 24px; /* Adjust width as needed */
+  height: 24px; /* Adjust height as needed */
+}
+
+.recommendation {
+  color: white;
+  padding: 10px 20px;
+  border-radius: 50px;
+  display: inline-block;
+  text-align: center;
+  font-weight: bold;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.recommendation.buy {
+  background-color: rgb(0, 255, 0);
+  animation: heartbeat 1.5s infinite;
+}
+
+.recommendation.sell {
+  background-color: red;
+  animation: heartbeat 1.5s infinite;
+}
+
+/* Heartbeat animation */
+@keyframes heartbeat {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.1);
+  }
+  50% {
+    transform: scale(1);
+  }
+  75% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+/* News Container Styles */
 .news-container {
   overflow: hidden;
 }

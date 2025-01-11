@@ -1,14 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import buy from './buy.png';
+import { PieChart, Pie, BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+// Add Pie and Bar here
 import {
   FaHome,
   FaNewspaper,
@@ -17,6 +11,44 @@ import {
 } from "react-icons/fa";
 import "./App.css";
 import News from "./components/News";
+
+
+import "./App.css";
+const calculateCategoryPercentage = (portfolio) => {
+  const categoryTotals = {};
+  let totalInvestment = 0;
+
+  portfolio.forEach(stock => {
+    const investment = stock.stock_quantity * stock.stock_bought_price;
+    totalInvestment += investment;
+    categoryTotals[stock.stock_category] = (categoryTotals[stock.stock_category] || 0) + investment;
+  });
+
+  const categoryPercentages = [];
+  Object.keys(categoryTotals).forEach(category => {
+    categoryPercentages.push({
+      name: category,
+      value: (categoryTotals[category] / totalInvestment) * 100
+    });
+  });
+
+  return categoryPercentages;
+};
+const renderCustomLabel = ({ name, value }) => {
+  return `${name}: ${(value).toFixed(2)}%`; // Round to 2 decimal places and add '%'
+};
+const calculateStockInvestment = (portfolio) => {
+  const investments = [];
+
+  portfolio.forEach(stock => {
+    investments.push({
+      name: stock.stock_name,
+      investment: stock.stock_quantity * stock.stock_bought_price
+    });
+  });
+
+  return investments;
+};
 
 const App = () => {
   const [profilePic, setProfilePic] = useState("");
@@ -82,16 +114,47 @@ const Dashboard = ({ portfolioData }) => {
     const container = document.querySelector('.portfolio-container');
     container.scrollBy({ left: -300, behavior: 'smooth' });
   };
+  const calculatePortfolioSummary = (portfolioData) => {
+    let totalInvestment = 0;
+    let totalGainLoss = 0;
+  
+    portfolioData.forEach(stock => {
+      const investment = stock.stock_quantity * stock.stock_bought_price;
+      totalInvestment += investment;
+      const gainLoss = (stock.stock_current_price - stock.stock_bought_price) * stock.stock_quantity;
+      totalGainLoss += gainLoss;
+    });
+  
+    return {
+      totalInvestment: totalInvestment.toFixed(2),
+      totalGainLoss: totalGainLoss.toFixed(2),
+      totalStocks: portfolioData.length
+    };
+  };
+  const { totalInvestment, totalGainLoss, totalStocks } = calculatePortfolioSummary(portfolioData);
 
   const scrollRight = () => {
     const container = document.querySelector('.portfolio-container');
     container.scrollBy({ left: 300, behavior: 'smooth' });
   };
+  const categoryPercentages = calculateCategoryPercentage(portfolioData);
+  const stockInvestments = calculateStockInvestment(portfolioData);
+  const getRandomColor = () => {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
+  
+
+ 
 
   return (
     <div className="dashboard">
       <div className="portfolio-header">
-        <h2>Hey User</h2>
+        <h2 style={{marginBottom:"-20px",marginLeft:"20px"}}>Hey User</h2>
         <div className="portfolio-options">
           <button className="scroll-btn left" onClick={scrollLeft}>
             &lt;
@@ -101,12 +164,33 @@ const Dashboard = ({ portfolioData }) => {
             {portfolioData.map((item, index) => (
               <div className="portfolio-item" key={index}>
                 <div className="stock-info">
-  <div className="name"><t>{item.stock_name}</t></div>
+                <div className="name"><t>{item.stock_name}</t></div>
+                <div className="decision">
+                <span
+                  className={`recommendation ${item.recommendation === "Buy" ? "buy" : "sell"}`}
+                >
+                <t style={{color:"white"}}>{item.recommendation}</t>
+                </span>
+              </div>
+
+
+
   <p><strong>Category:</strong> <span>{item.stock_category}</span></p>
   <p><strong>Quantity:</strong> <span>{item.stock_quantity}</span></p>
   <p><strong>Bought Price:</strong> <span>${item.stock_bought_price}</span></p>
   <p><strong>Current Price:</strong> <span>${item.stock_current_price}</span></p>
-  <p><strong>Recommendation:</strong> <span>{item.recommendation}</span></p>
+  <p>
+  <strong>{item.stock_current_price > item.stock_bought_price ? "Gain" : "Loss"}:</strong>
+    <span>
+      {(
+        ((item.stock_current_price - item.stock_bought_price) /
+          item.stock_bought_price) *
+        100
+      ).toFixed(2)}
+      %
+    </span>
+  </p>
+  
 </div>
 
                 <div className="recommendation">
@@ -121,58 +205,81 @@ const Dashboard = ({ portfolioData }) => {
           </button>
         </div>
       </div>
+      <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+  
+      <div style={{ width: '33%', height: '200px', overflowX: 'hidden' }}>
+  <ResponsiveContainer width="100%" height="100%">
+    <BarChart data={stockInvestments}>
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis 
+        dataKey="name" 
+        hide={true}  // Hide the X-axis labels
+      />
+      <YAxis />
+      <Tooltip />
+      <Legend />
+      <Bar dataKey="investment" fill="#8884d8" />
+    </BarChart>
+  </ResponsiveContainer>
+</div>
 
-      <h3>Your Dashboard</h3>
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={portfolioData}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Line type="monotone" dataKey="value" stroke="#82ca9d" />
-        </LineChart>
-      </ResponsiveContainer>
 
-      <div className="portfolio-details">
-        <div className="portfolio-list">
-          <table>
-            <thead>
-              <tr>
-                <th>Company</th>
-                <th>Price</th>
-                <th>Category</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Apple</td>
-                <td>$94</td>
-                <td>Technology</td>
-              </tr>
-              <tr>
-                <td>Google</td>
-                <td>$357</td>
-                <td>Technology</td>
-              </tr>
-              <tr>
-                <td>Tesla</td>
-                <td>$220</td>
-                <td>Automotive</td>
-              </tr>
-              <tr>
-                <td>Nvidia</td>
-                <td>$220</td>
-                <td>Technology</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
 
-        <div className="market-cap">
-          <h4>Market Cap</h4>
-          <p>$40.3 T</p>
-        </div>
-      </div>
+<div style={{ width: '33%' }}>
+  <ResponsiveContainer width="100%" height={300}>
+    <PieChart>
+      <Pie
+        data={categoryPercentages}
+        dataKey="value"
+        nameKey="name"
+        cx="50%"
+        cy="35%"
+        outerRadius={50}
+        fill="#8884d8"
+        label={renderCustomLabel} // Keeping the label
+      >
+        {categoryPercentages.map((entry, index) => (
+          <Cell 
+            key={`cell-${index}`} 
+            fill={getRandomColor()} // Assign a random color
+          />
+        ))}
+      </Pie>
+    </PieChart>
+  </ResponsiveContainer>
+</div>
+
+
+  <div style={{ width:'33%',marginTop:'-10px' }}>
+      
+      <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px' }}>
+        <thead>
+          <tr style={{ borderBottom: '2px solid #ccc' }}>
+            <th style={{ padding: '10px', textAlign: 'left' }}>Summary Field</th>
+            <th style={{ padding: '10px', textAlign: 'left' }}>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style={{ borderBottom: '1px solid #ddd' }}>
+            <td style={{ padding: '10px' }}><strong>Total Investment</strong></td>
+            <td style={{ padding: '10px' }}>${totalInvestment}</td>
+          </tr>
+          <tr style={{ borderBottom: '1px solid #ddd' }}>
+            <td style={{ padding: '10px' }}><strong>Total Gain/Loss</strong></td>
+            <td style={{ padding: '10px', color: totalGainLoss >= 0 ? 'green' : 'red' }}>${totalGainLoss}</td>
+          </tr>
+          <tr style={{ borderBottom: '1px solid #ddd' }}>
+            <td style={{ padding: '10px' }}><strong>Total Stocks</strong></td>
+            <td style={{ padding: '10px' }}>{totalStocks}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+</div>
+
+      
+
+       
     </div>
   );
 };

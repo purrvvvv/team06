@@ -6,8 +6,12 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 app.use(express.json());
-const cors = require("cors");
-app.use(cors());
+const cors = require('cors');
+app.use(cors({
+  origin: 'http://localhost:3000',  // Replace with your frontend URL
+  methods: 'GET',
+  allowedHeaders: 'Content-Type',
+}));
 
 
 // API Routes

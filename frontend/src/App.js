@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom";
 import buy from './buy.png';
 import { PieChart, Pie, BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-// Add Pie and Bar here
+import News from "./components/News";
 import {
   FaHome,
   FaNewspaper,
@@ -10,50 +10,18 @@ import {
   FaUser,
 } from "react-icons/fa";
 import "./App.css";
-import News from "./components/News";
 
 
 import "./App.css";
-const calculateCategoryPercentage = (portfolio) => {
-  const categoryTotals = {};
-  let totalInvestment = 0;
+import Profile from "./components/Profile.js";
 
-  portfolio.forEach(stock => {
-    const investment = stock.stock_quantity * stock.stock_bought_price;
-    totalInvestment += investment;
-    categoryTotals[stock.stock_category] = (categoryTotals[stock.stock_category] || 0) + investment;
-  });
-
-  const categoryPercentages = [];
-  Object.keys(categoryTotals).forEach(category => {
-    categoryPercentages.push({
-      name: category,
-      value: (categoryTotals[category] / totalInvestment) * 100
-    });
-  });
-
-  return categoryPercentages;
-};
-const renderCustomLabel = ({ name, value }) => {
-  return `${name}: ${(value).toFixed(2)}%`; // Round to 2 decimal places and add '%'
-};
-const calculateStockInvestment = (portfolio) => {
-  const investments = [];
-
-  portfolio.forEach(stock => {
-    investments.push({
-      name: stock.stock_name,
-      investment: stock.stock_quantity * stock.stock_bought_price
-    });
-  });
-
-  return investments;
-};
 
 const App = () => {
   const [profilePic, setProfilePic] = useState("");
   const [email, setEmail] = useState(""); 
 
+
+  
 
   useEffect(() => {
     fetch("https://randomuser.me/api/")
@@ -98,9 +66,29 @@ const App = () => {
 
         <div className="main-content">
           <Routes>
-            <Route path="/" element={<div>Table</div>} />
-            <Route path="/news" element={<News />} /> 
-            <Route path="/recommend" element={<div>Recommendations</div>} />
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/news" element={<News />} />
+            <Route
+              path="/recommend"
+              element={
+              <div style={{ display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100vh',
+              backgroundColor: '#f0f4f8',
+              fontFamily: 'Arial, sans-serif'}}>
+              <div style={{fontSize: '50px',
+  marginBottom: '20px',}}>🏃‍♂️</div>
+              <div style={{ fontSize: '32px',
+  fontWeight: 'bold',
+  color: '#ff6347',
+  textAlign: 'center',
+  animation: 'blink 1.5s step-end infinite',}}>Coming Soon</div>
+              </div>
+            }
+/>
+
             <Route path="/profile" element={<Profile profilePic={profilePic} email={email} />} />
           </Routes>
         </div>
@@ -109,19 +97,110 @@ const App = () => {
   );
 };
 
-const Dashboard = ({ portfolioData }) => {
+const Dashboard = () => {
+  const [portfolioData, setPortfolioData] = useState([]);
+  const [stockSentiment, setStockSentiment] = useState({});
+  
+
+  useEffect(() => {
+    // Fetch stock details from the backend
+    const fetchPortfolioData = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/portfolio/stocks");
+        if (!response.ok) {
+          throw new Error("Failed to fetch portfolio data");
+        }
+        const data = await response.json();
+        
+        setPortfolioData(data); // Update the state with the fetched data
+      } catch (error) {
+        console.error("Error fetching portfolio data:", error);
+      }
+    };
+
+    fetchPortfolioData(); // Call the function when the component mounts
+  }, []);
   const scrollLeft = () => {
     const container = document.querySelector('.portfolio-container');
     container.scrollBy({ left: -300, behavior: 'smooth' });
   };
+  const calculateCategoryPercentage = () => {
+    const categoryTotals = {};
+    let totalInvestment = 0;
+  
+    portfolioData.forEach(stock => {
+      const investment = stock.Stock_quantity * stock.Stock_bought_price;
+      totalInvestment += investment;
+      categoryTotals[stock.Stock_category] = (categoryTotals[stock.Stock_category] || 0) + investment;
+    });
+  
+    const categoryPercentages = [];
+    Object.keys(categoryTotals).forEach(category => {
+      categoryPercentages.push({
+        name: category,
+        value: (categoryTotals[category] / totalInvestment) * 100
+      });
+    });
+  
+    return categoryPercentages;
+  };
+  const renderCustomLabel = ({ name, value }) => {
+    return `${name}: ${(value).toFixed(2)}%`; // Round to 2 decimal places and add '%'
+  };
+  const calculateStockInvestment = (portfolioData) => {
+    const investments = [];
+  
+    portfolioData.forEach(stock => {
+      investments.push({
+        name: stock.Stock_name,
+        investment: stock.Stock_quantity * stock.Stock_bought_price
+      });
+    });
+  
+    return investments;
+  };
+  const fetchSentiments = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/portfolio/sentiment");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+
+      // Parse the sentiment data into a usable format
+      let parsedSentiments = {};
+      data.forEach((item) => {
+        if (typeof item === "string") {
+          const lines = item.split("\r\n"); // Split the string into lines
+          lines.forEach((line) => {
+            const match = line.match(/Stock: (\w+), Recommendation: (\w+)/); // Match stock and recommendation
+            if (match) {
+              const [_, stock, recommendation] = match;
+              parsedSentiments[stock] = recommendation;
+              // Add to parsedSentiments
+            }
+          });
+        }
+      });
+      setStockSentiment(parsedSentiments); // Set the parsed sentiments in state
+    } catch (err) {
+      console.error("Error fetching sentiment data:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchSentiments();
+  }, []);
+
   const calculatePortfolioSummary = (portfolioData) => {
     let totalInvestment = 0;
     let totalGainLoss = 0;
+    
   
     portfolioData.forEach(stock => {
-      const investment = stock.stock_quantity * stock.stock_bought_price;
+      const investment = stock.Stock_quantity * stock.Stock_bought_price;
       totalInvestment += investment;
-      const gainLoss = (stock.stock_current_price - stock.stock_bought_price) * stock.stock_quantity;
+      const gainLoss = (stock.Stock_current_price - stock.Stock_bought_price) * stock.Stock_quantity;
       totalGainLoss += gainLoss;
     });
   
@@ -132,6 +211,8 @@ const Dashboard = ({ portfolioData }) => {
     };
   };
   const { totalInvestment, totalGainLoss, totalStocks } = calculatePortfolioSummary(portfolioData);
+ 
+  
 
   const scrollRight = () => {
     const container = document.querySelector('.portfolio-container');
@@ -147,6 +228,11 @@ const Dashboard = ({ portfolioData }) => {
     }
     return color;
   };
+  const stockRecommendations = {
+  "Apple Inc": "Buy",
+  "StockB": "Sell",
+  "StockC": "Hold", // You can add more stocks with respective recommendations
+};
   
 
  
@@ -161,39 +247,43 @@ const Dashboard = ({ portfolioData }) => {
           </button>
 
           <div className="portfolio-container">
-            {portfolioData.map((item, index) => (
-              <div className="portfolio-item" key={index}>
-                <div className="stock-info">
-                <div className="name"><t>{item.stock_name}</t></div>
-                <div className="decision">
-                <span
-                  className={`recommendation ${item.recommendation === "Buy" ? "buy" : "sell"}`}
-                >
-                <t style={{color:"white"}}>{item.recommendation}</t>
-                </span>
-              </div>
+            {portfolioData.map((item, index) =>  (
+              
+             <div className="portfolio-item" key={index}>
+             <div className="stock-info">
+               <div className="name"><t>{item.Stock_name}</t></div>
+              
+               <div className="decision">
+               <span
+            className={`recommendation ${stockRecommendations[item.Stock_name] === "Buy" ? "buy" : stockRecommendations[item.Stock_name] === "Sell" ? "sell" : "hold"}`}
+          >
+            <t style={{ color: "white" }}>
+              {stockRecommendations[item.Stock_name]}
+            </t>
+                   
+                 </span>
+               </div>
+           
+               <p><strong>Category:</strong> <span>{item.Stock_category}</span></p>
+               <p><strong>Quantity:</strong> <span>{item.Stock_quantity}</span></p>
+               <p><strong>Bought Price:</strong> <span>${item.Stock_bought_price}</span></p>
+               <p><strong>Current Price:</strong> <span>${item.Stock_current_price}</span></p>
+               <p>
+                 <strong>{item.Stock_current_price > item.Stock_bought_price ? "Gain" : "Loss"}:</strong>
+                 <span>
+                   {(
+                     ((item.Stock_current_price - item.Stock_bought_price) /
+                       item.Stock_bought_price) *
+                     100
+                   ).toFixed(2)}
+                   %
+                 </span>
+               </p>
+             </div>
+           
+           
 
-
-
-  <p><strong>Category:</strong> <span>{item.stock_category}</span></p>
-  <p><strong>Quantity:</strong> <span>{item.stock_quantity}</span></p>
-  <p><strong>Bought Price:</strong> <span>${item.stock_bought_price}</span></p>
-  <p><strong>Current Price:</strong> <span>${item.stock_current_price}</span></p>
-  <p>
-  <strong>{item.stock_current_price > item.stock_bought_price ? "Gain" : "Loss"}:</strong>
-    <span>
-      {(
-        ((item.stock_current_price - item.stock_bought_price) /
-          item.stock_bought_price) *
-        100
-      ).toFixed(2)}
-      %
-    </span>
-  </p>
-  
-</div>
-
-                <div className="recommendation">
+                <div className="">
                   <label></label>
                 </div>
               </div>
@@ -280,16 +370,6 @@ const Dashboard = ({ portfolioData }) => {
       
 
        
-    </div>
-  );
-};
-
-const Profile = ({ profilePic, email }) => {
-  return (
-    <div className="profile-page">
-      <h2>Profile</h2>
-      <img src={profilePic} alt="Profile" className="profile-pic-large" />
-      <p>Email: {email}</p>
     </div>
   );
 };

@@ -13,7 +13,7 @@ import requests
 
 
 # Set up the Finnhub client with your API key
-api_key = 'cu1d2npr01qqr3sghu80cu1d2npr01qqr3sghu8g'
+api_key = 'cu1i3r1r01qqr3sgs600cu1i3r1r01qqr3sgs60g'
 finnhub_client = finnhub.Client(api_key)
 
 # Initialize NLTK's SentimentIntensityAnalyzer

@@ -8,7 +8,7 @@
 
 :root {
   --gradient-direction: at bottom right; 
-  --gradient-colors: #04BD98, #009C66, #68CCB0, #009159, #00945B, #007c4d, #006d43; /* Default gradient colors */
+  --gradient-colors: #04BD98, #009C66, #68CCB0, #009159, #00945B, #007c4d, #006d43; 
 }
 
 /* Sidebar Styles */
@@ -219,14 +219,14 @@ table th {
 .portfolio-container {
   display: flex;
   flex-wrap: nowrap;
-  overflow-x: auto; /* Ensures horizontal scroll */
+  overflow-x: auto; 
   gap: 20px;
   padding: 20px;
   scroll-behavior: smooth;
-  max-width: 100%; /* Prevents it from growing beyond the parent */
+  max-width: 100%; 
   box-sizing: border-box;
   margin-top: 10px;
-  scrollbar-width: none; /* Firefox */
+  scrollbar-width: none; 
   -ms-overflow-style: none;
 }
 
@@ -239,6 +239,8 @@ table th {
   text-align: left;
   margin-bottom: 20px;
   flex-shrink: 0; 
+  
+  
 }
 
 .portfolio-btn {

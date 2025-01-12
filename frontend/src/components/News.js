@@ -3,31 +3,13 @@ import React, { useState, useEffect, useMemo } from "react";
 const News = () => {
   const [newsData, setNewsData] = useState([]);
   const [error, setError] = useState("");
+ const [stockSentiment, setStockSentiment] = useState({});
 
   // Memoizing the tickers array to avoid unnecessary re-renders
-  const tickers = useMemo(() => ['AAPL', 'TSLA', 'KO', 'MSFT', 'JNJ', 'PFE', 'AMZN', 'JPM', 'BAC', 'JCP', 'BTU', 'AMRN', 'WFC', 'RF', 'CCL', 'FLG', 'CSAN', 'EVO'], []);
-
-  // Hardcoded sentiment for each stock
-  const stockSentiment = {
-    AAPL: "Buy",
-    TSLA: "Hold",
-    KO: "Sell",
-    MSFT: "Buy",
-    JNJ: "Hold",
-    PFE: "Sell",
-    AMZN: "Buy",
-    JPM: "Hold",
-    BAC: "Sell",
-    JCP: "Hold",
-    BTU: "Buy",
-    AMRN: "Buy",
-    WFC: "Sell",
-    RF: "Hold",
-    CCL: "Sell",
-    FLG: "Buy",
-    CSAN: "Hold",
-    EVO: "Buy",
-  };
+  const tickers = useMemo(() => [
+    "AAPL", "TSLA", "KO", "MSFT", "JNJ", "PFE", "AMZN", "JPM", "BAC", 
+    "JCP", "BTU", "AMRN", "WFC", "RF", "CCL", "FLG", "CSAN", "EVO"
+  ], []);
 
   // Function to determine sentiment color
   const getSentimentColor = (sentiment) => {
@@ -43,10 +25,47 @@ const News = () => {
     }
   };
 
+  // Fetch Sentiments from Backend
+  useEffect(() => {
+    const fetchSentiments = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/portfolio/sentiment");
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+  
+        // Parse the sentiment data into a usable format
+        let parsedSentiments = {};
+  
+        data.forEach((item) => {
+          if (typeof item === "string") {
+            const lines = item.split("\r\n"); // Split the string into lines
+            lines.forEach((line) => {
+              const match = line.match(/Stock: (\w+), Recommendation: (\w+)/); // Match stock and recommendation
+              if (match) {
+                const [_, stock, recommendation] = match;
+                parsedSentiments[stock] = recommendation; // Add to parsedSentiments
+              }
+            });
+          }
+        });
+  
+        setStockSentiment(parsedSentiments); // Set the parsed sentiments in state
+      } catch (err) {
+        console.error("Error fetching sentiment data:", err);
+        setError(err.message || "Something went wrong.");
+      }
+    };
+  
+    fetchSentiments();
+  }, []);
+  
+  // Fetch News Data
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const API_KEY = "cu1d2npr01qqr3sghu80cu1d2npr01qqr3sghu8g"; // Replace with your actual Finnhub API key
+        const API_KEY = "cu1i52pr01qqr3sgs8hgcu1i52pr01qqr3sgs8i00"; // Replace with your actual Finnhub API key
         let allNews = [];
 
         // Loop through each ticker and fetch news
@@ -61,7 +80,7 @@ const News = () => {
           }
 
           const data = await response.json();
-          
+
           // Filter to get only the first news item for each stock
           if (data && data.length > 0) {
             const firstNewsItem = data[0];
@@ -90,7 +109,7 @@ const News = () => {
         <div className="news-list">
           {newsData.map((news, index) => {
             const ticker = news.ticker; // Ticker from the news item
-            const sentiment = stockSentiment[ticker] || "Unknown Sentiment"; // Use the sentiment for the ticker
+            const sentiment = stockSentiment[ticker] || "Unknown Sentiment"; // Use the sentiment fetched from the backend
 
             // Determine the color for the sentiment
             const sentimentColor = getSentimentColor(sentiment);
